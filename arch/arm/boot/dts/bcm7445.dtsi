@@ -119,6 +119,30 @@
 			interrupt-names = "hif";
 		};
 
+		aon_pm_l2_intc: interrupt-controller@410640 {
+			compatible = "brcm,l2-intc";
+			reg = <0x410640 0x30>;
+			interrupt-controller;
+			#interrupt-cells = <1>;
+			interrupts = <GIC_SPI 0x40 0x0>;
+			interrupt-parent = <&gic>;
+			brcm,irq-can-wake;
+		};
+
+		aon-ctrl@410000 {
+			compatible = "brcm,brcmstb-aon-ctrl";
+			reg = <0x410000 0x200>, <0x410200 0x400>;
+			reg-names = "aon-ctrl", "aon-sram";
+		};
+
+		waketimer@f0417580 {
+			compatible = "brcm,brcmstb-waketimer";
+			reg = <0x417580 0x14>;
+			interrupt-parent = <&aon_pm_l2_intc>;
+			interrupts = <3>;
+			interrupt-names = "timer";
+		};
+
 		nand: nand@3e2800 {
 			status = "disabled";
 			#address-cells = <1>;
@@ -167,6 +191,84 @@
 				#phy-cells = <0>;
 			};
 		};
+	};
+
+	memory_controllers {
+		compatible = "simple-bus";
+		ranges = <0x0 0x0 0xf1100000 0x200000>;
+		#address-cells = <1>;
+		#size-cells = <1>;
+
+		memc@0 {
+			compatible = "brcm,brcmstb-memc", "simple-bus";
+			#address-cells = <1>;
+			#size-cells = <1>;
+			ranges = <0x0 0x0 0x80000>;
+
+			memc-ddr@2000 {
+				compatible = "brcm,brcmstb-memc-ddr";
+				reg = <0x2000 0x800>;
+			};
+
+			ddr-phy@6000 {
+				compatible = "brcm,brcmstb-ddr-phy-v240.1";
+				reg = <0x6000 0x21c>;
+				};
+
+			shimphy@8000 {
+				compatible = "brcm,brcmstb-ddr-shimphy-v1.0";
+				reg = <0x8000 0xe4>;
+			};
+		};
+
+		memc@1 {
+			compatible = "brcm,brcmstb-memc", "simple-bus";
+			#address-cells = <1>;
+			#size-cells = <1>;
+			ranges = <0x0 0x80000 0x80000>;
+
+			memc-ddr@2000 {
+				compatible = "brcm,brcmstb-memc-ddr";
+				reg = <0x2000 0x800>;
+			};
+
+			ddr-phy@6000 {
+				compatible = "brcm,brcmstb-ddr-phy-v240.1";
+				reg = <0x6000 0x21c>;
+			};
+
+			shimphy@8000 {
+				compatible = "brcm,brcmstb-ddr-shimphy-v1.0";
+				reg = <0x8000 0xe4>;
+			};
+		};
+
+		memc@2 {
+			compatible = "brcm,brcmstb-memc", "simple-bus";
+			#address-cells = <1>;
+			#size-cells = <1>;
+			ranges = <0x0 0x100000 0x80000>;
+
+			memc-ddr@2000 {
+				compatible = "brcm,brcmstb-memc-ddr";
+				reg = <0x2000 0x800>;
+			};
+
+			ddr-phy@6000 {
+				compatible = "brcm,brcmstb-ddr-phy-v240.1";
+				reg = <0x6000 0x21c>;
+			};
+
+			shimphy@8000 {
+				compatible = "brcm,brcmstb-ddr-shimphy-v1.0";
+				reg = <0x8000 0xe4>;
+			};
+		};
+	};
+
+	sram@ffe00000 {
+		compatible = "brcm,boot-sram", "mmio-sram";
+		reg = <0x0 0xffe00000 0x0 0x10000>;
 	};
 
 	smpboot {
