@@ -16,4 +16,7 @@ config BRCMSTB_PM
 	depends on PM
 	depends on ARM && ARCH_BRCMSTB
 
+config BRCMSTB_WKTMR
+	tristate "Support wake-up timer"
+
 endif # SOC_BRCMSTB
