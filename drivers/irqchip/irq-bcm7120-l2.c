@@ -142,10 +142,10 @@ static int __init bcm7120_l2_intc_iomap_7120(struct device_node *dn,
 {
 	int ret;
 
-	data->map_base[0] = of_iomap(dn, 0);
-	if (!data->map_base[0]) {
+	data->map_base[0] = of_io_request_and_map(dn, 0, dn->full_name);
+	if (IS_ERR(data->map_base[0])) {
 		pr_err("unable to map registers\n");
-		return -ENOMEM;
+		return PTR_ERR(data->map_base[0]);
 	}
 
 	data->pair_base[0] = data->map_base[0];
@@ -178,15 +178,16 @@ static int __init bcm7120_l2_intc_iomap_3380(struct device_node *dn,
 
 	for (gc_idx = 0; gc_idx < MAX_WORDS; gc_idx++) {
 		unsigned int map_idx = gc_idx * 2;
-		void __iomem *en = of_iomap(dn, map_idx + 0);
-		void __iomem *stat = of_iomap(dn, map_idx + 1);
-		void __iomem *base = min(en, stat);
+		void __iomem *en, *stat, *base;
 
+		en = of_io_request_and_map(dn, map_idx + 0, "irq-en");
+		stat = of_io_request_and_map(dn, map_idx + 1, "irq-stat");
+		if (IS_ERR(en) || IS_ERR(stat))
+			break;
+
+		base = min(en, stat);
 		data->map_base[map_idx + 0] = en;
 		data->map_base[map_idx + 1] = stat;
-
-		if (!base)
-			break;
 
 		data->pair_base[gc_idx] = base;
 		data->en_offset[gc_idx] = en - base;
