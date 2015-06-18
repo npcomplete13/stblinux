@@ -109,6 +109,19 @@
 			brcm,int-fwd-mask = <0x70000>;
 		};
 
+		upg_gio: gpio@40a700 {
+			compatible = "brcm,bcm7445-gpio", "brcm,brcmstb-gpio";
+			reg = <0x40a700 0x80>;
+			#gpio-cells = <2>;
+			#interrupt-cells = <2>;
+			gpio-controller;
+			interrupt-controller;
+			interrupt-parent = <&irq0_intc>;
+			interrupts = <6>;
+			interrupt-names = "upg_gio";
+			brcm,gpio-bank-widths = <32 32 32 24>;
+		};
+
 		hif_intr2_intc: interrupt-controller@3e1000 {
 			compatible = "brcm,l2-intc";
 			reg = <0x3e1000 0x30>;
